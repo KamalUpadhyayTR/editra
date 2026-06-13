@@ -387,44 +387,87 @@
         <p class="outreach-desc">Generate a professional email to showcase your portfolio. Pick a client type, enter their details, and send.</p>
       </div>
 
-      <div class="outreach-form">
-        <div class="outreach-field">
-          <label>Client's Email</label>
-          <input type="email" id="clientEmail" placeholder="client@company.com">
-        </div>
+      <!-- Tabs -->
+      <div class="outreach-tabs">
+        <button class="outreach-tab active" data-tab="compose">Compose</button>
+        <button class="outreach-tab" data-tab="suggestions">Suggested Clients</button>
+        <button class="outreach-tab" data-tab="tracker">Tracker</button>
+      </div>
 
-        <div class="outreach-field">
-          <label>Client's Name</label>
-          <input type="text" id="clientName" placeholder="John / Brand Name">
-        </div>
+      <!-- TAB: Compose -->
+      <div class="outreach-panel active" id="panelCompose">
+        <div class="outreach-form">
+          <div class="outreach-row">
+            <div class="outreach-field">
+              <label>Client's Email</label>
+              <input type="email" id="clientEmail" placeholder="client@company.com">
+            </div>
+            <div class="outreach-field">
+              <label>Client's Name</label>
+              <input type="text" id="clientName" placeholder="John / Brand Name">
+            </div>
+          </div>
 
-        <div class="outreach-field">
-          <label>Client Type</label>
-          <div class="outreach-types" id="clientTypes">
-            <button class="type-btn active" data-type="brand">Brand</button>
-            <button class="type-btn" data-type="creator">Creator</button>
-            <button class="type-btn" data-type="agency">Agency</button>
-            <button class="type-btn" data-type="startup">Startup</button>
-            <button class="type-btn" data-type="ecommerce">E-Commerce</button>
-            <button class="type-btn" data-type="realestate">Real Estate</button>
+          <div class="outreach-field">
+            <label>Client Type</label>
+            <div class="outreach-types" id="clientTypes">
+              <button class="type-btn active" data-type="brand">Brand</button>
+              <button class="type-btn" data-type="creator">Creator</button>
+              <button class="type-btn" data-type="agency">Agency</button>
+              <button class="type-btn" data-type="startup">Startup</button>
+              <button class="type-btn" data-type="ecommerce">E-Commerce</button>
+              <button class="type-btn" data-type="realestate">Real Estate</button>
+            </div>
+          </div>
+
+          <div class="outreach-field">
+            <label>Email Type</label>
+            <div class="outreach-types" id="emailTypeSelector">
+              <button class="type-btn active" data-emailtype="initial">First Outreach</button>
+              <button class="type-btn" data-emailtype="followup1">Follow-up (Day 3)</button>
+              <button class="type-btn" data-emailtype="followup2">Follow-up (Day 7)</button>
+            </div>
+          </div>
+
+          <div class="outreach-field">
+            <label>Preview</label>
+            <div class="email-preview" id="emailPreview"></div>
+          </div>
+
+          <div class="outreach-actions">
+            <button class="btn btn-primary" id="sendEmail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Open in Gmail
+            </button>
+            <button class="btn btn-secondary" id="copyEmail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy Email Text
+            </button>
           </div>
         </div>
+      </div>
 
-        <div class="outreach-field">
-          <label>Preview</label>
-          <div class="email-preview" id="emailPreview"></div>
+      <!-- TAB: Suggested Clients -->
+      <div class="outreach-panel" id="panelSuggestions">
+        <div class="suggestions-filter">
+          <button class="type-btn active" data-filter="all">All</button>
+          <button class="type-btn" data-filter="brand">Brands</button>
+          <button class="type-btn" data-filter="creator">Creators</button>
+          <button class="type-btn" data-filter="agency">Agencies</button>
+          <button class="type-btn" data-filter="startup">Startups</button>
+          <button class="type-btn" data-filter="ecommerce">E-Commerce</button>
         </div>
+        <div class="suggestions-list" id="suggestionsList"></div>
+      </div>
 
-        <div class="outreach-actions">
-          <button class="btn btn-primary" id="sendEmail">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Open in Gmail
-          </button>
-          <button class="btn btn-secondary" id="copyEmail">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy Email Text
-          </button>
+      <!-- TAB: Tracker -->
+      <div class="outreach-panel" id="panelTracker">
+        <div class="tracker-stats" id="trackerStats"></div>
+        <div class="tracker-list" id="trackerList"></div>
+        <div class="tracker-empty" id="trackerEmpty">
+          <p>No outreach logged yet. Send your first email and it'll appear here.</p>
         </div>
+        <button class="btn btn-secondary" id="clearTracker" style="margin-top:16px;width:100%">Clear All History</button>
       </div>
     </div>
   </div>

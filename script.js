@@ -412,16 +412,184 @@ Teameditra@gmail.com`
     }
   };
 
+  // ---------- Follow-up Templates ----------
+  const followUpTemplates = {
+    followup1: {
+      subject: (origSubject) => `Following up — ${origSubject}`,
+      body: (name) => `Hi ${name},
+
+Just wanted to follow up on my previous email. I understand you're busy, but I'd love the chance to discuss how Editra can help elevate your visual content.
+
+Here's my portfolio again for quick reference:
+${portfolioUrl}
+
+Would a 10-minute call this week work for you? Happy to work around your schedule.
+
+Best,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    followup2: {
+      subject: (origSubject) => `Quick check-in — ${origSubject}`,
+      body: (name) => `Hey ${name},
+
+I wanted to reach out one last time. If now isn't the right time, no worries at all — I completely understand.
+
+But if you ever need help with video editing, motion graphics, or any visual content, I'm just an email away. Feel free to bookmark my portfolio:
+${portfolioUrl}
+
+Wishing you and your team all the best!
+
+Cheers,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    }
+  };
+
+  // ---------- Suggested Clients Database ----------
+  const suggestedClients = [
+    { name: 'Nike India', detail: 'Sports brand — needs campaign & promo videos', type: 'brand', email: '' },
+    { name: 'Boat Lifestyle', detail: 'Audio brand — social media content & ads', type: 'brand', email: '' },
+    { name: 'Mamaearth', detail: 'D2C beauty brand — product showcase videos', type: 'brand', email: '' },
+    { name: 'Zomato', detail: 'Food delivery — quirky social media content', type: 'brand', email: '' },
+    { name: 'Sugar Cosmetics', detail: 'Beauty brand — reels & promotional edits', type: 'brand', email: '' },
+    { name: 'Dhruv Rathee', detail: 'YouTuber — documentary style editing', type: 'creator', email: '' },
+    { name: 'Beer Biceps (Ranveer)', detail: 'Creator — talking head & podcast edits', type: 'creator', email: '' },
+    { name: 'Tanmay Bhat', detail: 'Creator — short-form content & reels', type: 'creator', email: '' },
+    { name: 'Ankur Warikoo', detail: 'Creator — educational content & motion graphics', type: 'creator', email: '' },
+    { name: 'Flying Beast', detail: 'Vlogger — cinematic vlog editing', type: 'creator', email: '' },
+    { name: 'Monk Entertainment', detail: 'Influencer marketing agency', type: 'agency', email: '' },
+    { name: 'WATConsult', detail: 'Digital marketing agency', type: 'agency', email: '' },
+    { name: 'Schbang', detail: 'Creative agency — brand content', type: 'agency', email: '' },
+    { name: 'Dentsu India', detail: 'Advertising agency — campaign videos', type: 'agency', email: '' },
+    { name: 'Zerodha', detail: 'Fintech startup — explainer videos', type: 'startup', email: '' },
+    { name: 'CRED', detail: 'Fintech — creative brand videos', type: 'startup', email: '' },
+    { name: 'Razorpay', detail: 'Payments startup — product demos', type: 'startup', email: '' },
+    { name: 'Meesho', detail: 'Social commerce — product videos', type: 'ecommerce', email: '' },
+    { name: 'Nykaa', detail: 'Beauty ecommerce — product showcases', type: 'ecommerce', email: '' },
+    { name: 'Bewakoof', detail: 'Fashion ecommerce — fun social content', type: 'ecommerce', email: '' },
+  ];
+
+  // ---------- State ----------
   let selectedType = 'brand';
+  let selectedEmailType = 'initial';
+  let tracker = JSON.parse(localStorage.getItem('editra_tracker') || '[]');
+
+  // ---------- Helpers ----------
+  function getEmailContent(name) {
+    const template = emailTemplates[selectedType];
+    if (selectedEmailType === 'initial') {
+      return { subject: template.subject, body: template.body(name) };
+    } else {
+      const fu = followUpTemplates[selectedEmailType];
+      return { subject: fu.subject(template.subject), body: fu.body(name) };
+    }
+  }
 
   function updatePreview() {
     const name = clientName.value.trim() || 'there';
-    const template = emailTemplates[selectedType];
-    emailPreview.textContent = `Subject: ${template.subject}\n\n${template.body(name)}`;
+    const { subject, body } = getEmailContent(name);
+    emailPreview.textContent = `Subject: ${subject}\n\n${body}`;
   }
 
-  updatePreview();
+  function saveTracker() {
+    localStorage.setItem('editra_tracker', JSON.stringify(tracker));
+  }
 
+  function addToTracker(email, name, type) {
+    const existing = tracker.find(t => t.email === email);
+    if (existing) {
+      existing.lastContact = new Date().toISOString();
+      existing.count = (existing.count || 1) + 1;
+    } else {
+      tracker.unshift({ email, name, type, status: 'sent', date: new Date().toISOString(), lastContact: new Date().toISOString(), count: 1 });
+    }
+    saveTracker();
+    renderTracker();
+  }
+
+  function renderTracker() {
+    const stats = document.getElementById('trackerStats');
+    const list = document.getElementById('trackerList');
+    const empty = document.getElementById('trackerEmpty');
+
+    const sent = tracker.filter(t => t.status === 'sent').length;
+    const pending = tracker.filter(t => t.status === 'pending').length;
+    const replied = tracker.filter(t => t.status === 'replied').length;
+
+    stats.innerHTML = `
+      <div class="stat-card"><div class="stat-number sent">${sent}</div><div class="stat-label">Sent</div></div>
+      <div class="stat-card"><div class="stat-number pending">${pending}</div><div class="stat-label">Awaiting</div></div>
+      <div class="stat-card"><div class="stat-number replied">${replied}</div><div class="stat-label">Replied</div></div>
+    `;
+
+    if (tracker.length === 0) {
+      empty.style.display = 'block';
+      list.innerHTML = '';
+      return;
+    }
+
+    empty.style.display = 'none';
+    list.innerHTML = tracker.map((t, i) => {
+      const date = new Date(t.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+      const nextStatus = t.status === 'sent' ? 'pending' : t.status === 'pending' ? 'replied' : 'sent';
+      return `<div class="tracker-item">
+        <div class="tracker-dot ${t.status}"></div>
+        <div class="tracker-item-info">
+          <div class="tracker-item-name">${t.name || t.email}</div>
+          <div class="tracker-item-email">${t.email} · ${t.type} · ×${t.count}</div>
+        </div>
+        <div class="tracker-item-date">${date}</div>
+        <button class="tracker-status-btn" data-idx="${i}" data-next="${nextStatus}">${t.status}</button>
+      </div>`;
+    }).join('');
+
+    list.querySelectorAll('.tracker-status-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tracker[btn.dataset.idx].status = btn.dataset.next;
+        saveTracker();
+        renderTracker();
+      });
+    });
+  }
+
+  function renderSuggestions(filter) {
+    const list = document.getElementById('suggestionsList');
+    const filtered = filter === 'all' ? suggestedClients : suggestedClients.filter(c => c.type === filter);
+
+    list.innerHTML = filtered.map((c, i) => `
+      <div class="suggestion-card">
+        <div class="suggestion-info">
+          <div class="suggestion-name">${c.name}</div>
+          <div class="suggestion-detail">${c.detail}</div>
+        </div>
+        <span class="suggestion-type">${c.type}</span>
+        <button class="suggestion-use" data-name="${c.name}" data-type="${c.type}">Use</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.suggestion-use').forEach(btn => {
+      btn.addEventListener('click', () => {
+        clientName.value = btn.dataset.name;
+        selectedType = btn.dataset.type;
+        clientTypes.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === selectedType));
+        document.querySelectorAll('.outreach-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'compose'));
+        document.querySelectorAll('.outreach-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panelCompose').classList.add('active');
+        clientEmail.focus();
+        updatePreview();
+      });
+    });
+  }
+
+  // ---------- Init ----------
+  updatePreview();
+  renderTracker();
+  renderSuggestions('all');
+
+  // ---------- Modal Open/Close ----------
   if (openOutreach) {
     openOutreach.addEventListener('click', (e) => {
       e.preventDefault();
@@ -444,6 +612,20 @@ Teameditra@gmail.com`
     }
   });
 
+  // ---------- Tabs ----------
+  document.querySelectorAll('.outreach-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.outreach-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.outreach-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel' + tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)).classList.add('active');
+    });
+  });
+
+  // ---------- Panel mappings for tab IDs ----------
+  // compose -> panelCompose, suggestions -> panelSuggestions, tracker -> panelTracker
+
+  // ---------- Client Type Selection ----------
   clientTypes.querySelectorAll('.type-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       clientTypes.querySelector('.active').classList.remove('active');
@@ -453,27 +635,55 @@ Teameditra@gmail.com`
     });
   });
 
+  // ---------- Email Type Selection ----------
+  document.getElementById('emailTypeSelector').querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('emailTypeSelector').querySelector('.active').classList.remove('active');
+      btn.classList.add('active');
+      selectedEmailType = btn.dataset.emailtype;
+      updatePreview();
+    });
+  });
+
   clientName.addEventListener('input', updatePreview);
 
+  // ---------- Send & Copy ----------
   sendEmailBtn.addEventListener('click', () => {
     const email = clientEmail.value.trim();
     if (!email) { clientEmail.focus(); return; }
     const name = clientName.value.trim() || 'there';
-    const template = emailTemplates[selectedType];
-    const subject = encodeURIComponent(template.subject);
-    const body = encodeURIComponent(template.body(name));
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${subject}&body=${body}`;
+    const { subject, body } = getEmailContent(name);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(gmailUrl, '_blank');
+    addToTracker(email, name, selectedType);
   });
 
   copyEmailBtn.addEventListener('click', () => {
     const name = clientName.value.trim() || 'there';
-    const template = emailTemplates[selectedType];
-    const text = `Subject: ${template.subject}\n\n${template.body(name)}`;
+    const { subject, body } = getEmailContent(name);
+    const text = `Subject: ${subject}\n\n${body}`;
     navigator.clipboard.writeText(text).then(() => {
       copyEmailBtn.textContent = 'Copied!';
       setTimeout(() => { copyEmailBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Email Text'; }, 2000);
     });
+  });
+
+  // ---------- Suggestions Filter ----------
+  document.querySelectorAll('.suggestions-filter .type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.suggestions-filter .type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderSuggestions(btn.dataset.filter);
+    });
+  });
+
+  // ---------- Clear Tracker ----------
+  document.getElementById('clearTracker').addEventListener('click', () => {
+    if (confirm('Clear all outreach history?')) {
+      tracker = [];
+      saveTracker();
+      renderTracker();
+    }
   });
 
 });
