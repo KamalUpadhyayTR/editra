@@ -260,4 +260,219 @@ document.addEventListener('DOMContentLoaded', () => {
 
   stepNumbers.forEach(el => counterObserver.observe(el));
 
+  // ---------- Client Outreach Tool ----------
+  const outreachOverlay = document.getElementById('outreachOverlay');
+  const openOutreach = document.getElementById('openOutreach');
+  const outreachClose = document.getElementById('outreachClose');
+  const clientEmail = document.getElementById('clientEmail');
+  const clientName = document.getElementById('clientName');
+  const clientTypes = document.getElementById('clientTypes');
+  const emailPreview = document.getElementById('emailPreview');
+  const sendEmailBtn = document.getElementById('sendEmail');
+  const copyEmailBtn = document.getElementById('copyEmail');
+
+  const portfolioUrl = window.location.href;
+
+  const emailTemplates = {
+    brand: {
+      subject: 'Elevate Your Brand Visuals — Editra',
+      body: (name) => `Hi ${name},
+
+I came across your brand and really admire what you're building. I'm Sai Kiran, a motion designer and video editor specializing in brand visuals, promotional content, and motion graphics.
+
+I help brands like yours create scroll-stopping content that drives engagement and tells a compelling visual story.
+
+Here's a look at my recent work:
+${portfolioUrl}
+
+Some of what I can help with:
+• Brand promo videos & launch campaigns
+• Motion graphics for social media
+• Product showcase edits
+• Cinematic brand films
+
+I'd love to explore how we can bring your brand's story to life through video. Would you be open to a quick chat this week?
+
+Looking forward to hearing from you.
+
+Best,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    creator: {
+      subject: 'Let\'s Create Something Amazing Together — Editra',
+      body: (name) => `Hey ${name},
+
+Love your content! I'm Sai Kiran from Editra — I specialize in video editing and motion design for creators who want to level up their visual game.
+
+Check out my portfolio:
+${portfolioUrl}
+
+Here's how I can help:
+• YouTube video editing & pacing
+• Talking head edits with dynamic cuts
+• Short-form content for Reels/Shorts/TikTok
+• Animated intros, transitions & thumbnails
+
+I'd love to help you produce content that stands out and keeps your audience hooked. Let me know if you'd like to chat!
+
+Cheers,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    agency: {
+      subject: 'Freelance Video Editor & Motion Designer Available — Editra',
+      body: (name) => `Hi ${name},
+
+I'm Sai Kiran, a freelance video editor and motion designer. I work with agencies to deliver high-quality video content, motion graphics, and visual assets for their clients.
+
+Portfolio:
+${portfolioUrl}
+
+My services include:
+• End-to-end video production & post-production
+• Motion graphics & animated explainers
+• Social media content packages
+• Brand identity videos & campaign visuals
+
+I'm comfortable with fast turnarounds and can scale to meet your project needs. Happy to discuss rates and availability.
+
+Best regards,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    startup: {
+      subject: 'Video Content That Helps You Launch & Grow — Editra',
+      body: (name) => `Hi ${name},
+
+Congrats on building something exciting! I'm Sai Kiran from Editra — I help startups create impactful video content that communicates their vision clearly and attracts customers.
+
+See my work here:
+${portfolioUrl}
+
+I can help with:
+• Product demo & explainer videos
+• Launch campaign visuals
+• Investor pitch video editing
+• Social media content strategy & production
+
+Great visuals can make all the difference in how your startup is perceived. I'd love to help you make a strong impression. Open to a quick call?
+
+Best,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    ecommerce: {
+      subject: 'Product Videos That Convert — Editra',
+      body: (name) => `Hi ${name},
+
+I'm Sai Kiran, a video editor and motion designer who helps e-commerce brands create product videos that drive sales and engagement.
+
+Check out my portfolio:
+${portfolioUrl}
+
+What I offer:
+• Product showcase & lifestyle videos
+• Unboxing & review-style edits
+• Social media ad creatives (Reels, Stories, Shorts)
+• Animated product graphics & banners
+
+Video content consistently outperforms static images in conversion rates. Let me help you create content that sells. Interested in chatting?
+
+Best,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    },
+    realestate: {
+      subject: 'Cinematic Property Videos — Editra',
+      body: (name) => `Hi ${name},
+
+I'm Sai Kiran from Editra. I create cinematic property videos and virtual tours that help real estate professionals showcase listings in the most compelling way.
+
+My portfolio:
+${portfolioUrl}
+
+Services I offer:
+• Cinematic property walkthrough edits
+• Drone footage editing & color grading
+• Virtual tour videos
+• Agent/brand promotional videos
+
+A well-produced video can make a listing stand out and attract serious buyers faster. I'd love to help with your next project.
+
+Best regards,
+Sai Kiran
+Editra — Motion Design & Video Editing
+Teameditra@gmail.com`
+    }
+  };
+
+  let selectedType = 'brand';
+
+  function updatePreview() {
+    const name = clientName.value.trim() || 'there';
+    const template = emailTemplates[selectedType];
+    emailPreview.textContent = `Subject: ${template.subject}\n\n${template.body(name)}`;
+  }
+
+  updatePreview();
+
+  if (openOutreach) {
+    openOutreach.addEventListener('click', (e) => {
+      e.preventDefault();
+      outreachOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  if (outreachClose) {
+    outreachClose.addEventListener('click', () => {
+      outreachOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  }
+
+  outreachOverlay.addEventListener('click', (e) => {
+    if (e.target === outreachOverlay) {
+      outreachOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  clientTypes.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      clientTypes.querySelector('.active').classList.remove('active');
+      btn.classList.add('active');
+      selectedType = btn.dataset.type;
+      updatePreview();
+    });
+  });
+
+  clientName.addEventListener('input', updatePreview);
+
+  sendEmailBtn.addEventListener('click', () => {
+    const email = clientEmail.value.trim();
+    if (!email) { clientEmail.focus(); return; }
+    const name = clientName.value.trim() || 'there';
+    const template = emailTemplates[selectedType];
+    const subject = encodeURIComponent(template.subject);
+    const body = encodeURIComponent(template.body(name));
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+  });
+
+  copyEmailBtn.addEventListener('click', () => {
+    const name = clientName.value.trim() || 'there';
+    const template = emailTemplates[selectedType];
+    const text = `Subject: ${template.subject}\n\n${template.body(name)}`;
+    navigator.clipboard.writeText(text).then(() => {
+      copyEmailBtn.textContent = 'Copied!';
+      setTimeout(() => { copyEmailBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Email Text'; }, 2000);
+    });
+  });
+
 });
