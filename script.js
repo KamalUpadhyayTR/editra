@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendEmailBtn = document.getElementById('sendEmail');
   const copyEmailBtn = document.getElementById('copyEmail');
 
-  const portfolioUrl = window.location.href;
+  const portfolioUrl = 'https://kamalupadhyaytr.github.io/editra/';
 
   const emailTemplates = {
     brand: {
