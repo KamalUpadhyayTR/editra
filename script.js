@@ -462,7 +462,8 @@ Teameditra@gmail.com`
     const template = emailTemplates[selectedType];
     const subject = encodeURIComponent(template.subject);
     const body = encodeURIComponent(template.body(name));
-    window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${subject}&body=${body}`;
+    window.open(gmailUrl, '_blank');
   });
 
   copyEmailBtn.addEventListener('click', () => {
